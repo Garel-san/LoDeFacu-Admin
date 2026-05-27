@@ -50,6 +50,10 @@ export function ProductsPage() {
 
   const [error, setError] = useState<string | null>(null);
 
+  const [filterCategory, setFilterCategory] = useState("");
+
+  const [filterSearch, setFilterSearch] = useState("");
+
   const fetchAll = async () => {
     const [{ data: prods }, { data: cats }] = await Promise.all([
       supabase.from("products").select("*").order("position"),
@@ -263,6 +267,14 @@ export function ProductsPage() {
   const catLabel = (id: string) =>
     categories.find((c) => c.id === id)?.label ?? id;
 
+  const filtered = products.filter((p) => {
+    const matchCat = filterCategory === "" || p.category_id === filterCategory;
+    const matchSearch =
+      filterSearch === "" ||
+      p.name.toLowerCase().includes(filterSearch.toLowerCase());
+    return matchCat && matchSearch;
+  });
+
   const moveProduct = async (index: number, direction: "up" | "down") => {
     const swapIndex = direction === "up" ? index - 1 : index + 1;
 
@@ -298,15 +310,47 @@ export function ProductsPage() {
       <div className="page-header">
         <div>
           <h1 className="page-title">Productos</h1>
-
           <p className="page-subtitle">
-            {products.length} productos en el menú
+            {filtered.length === products.length
+              ? `${products.length} productos en el menú`
+              : `${filtered.length} de ${products.length} productos`}
           </p>
         </div>
-
         <button className="btn btn--primary" onClick={openNew}>
           + Nuevo producto
         </button>
+      </div>
+
+      <div className="filter-toolbar">
+        <input
+          className="field__input filter-toolbar__search"
+          placeholder="Buscar producto..."
+          value={filterSearch}
+          onChange={(e) => setFilterSearch(e.target.value)}
+        />
+        <select
+          className="field__select filter-toolbar__select"
+          value={filterCategory}
+          onChange={(e) => setFilterCategory(e.target.value)}
+        >
+          <option value="">Todas las categorías</option>
+          {categories.map((c) => (
+            <option key={c.id} value={c.id}>
+              {c.label}
+            </option>
+          ))}
+        </select>
+        {(filterSearch || filterCategory) && (
+          <button
+            className="btn btn--ghost"
+            onClick={() => {
+              setFilterSearch("");
+              setFilterCategory("");
+            }}
+          >
+            Limpiar
+          </button>
+        )}
       </div>
 
       {loading ? (
@@ -317,105 +361,105 @@ export function ProductsPage() {
           <div className="card table-card desktop-only">
             <div className="table-wrapper">
               <table className="table">
-              <thead>
-                <tr>
-                  <th>Orden</th>
-                  <th>Imagen</th>
-                  <th>Nombre</th>
-                  <th>Categoría</th>
-                  <th>Precio</th>
-                  <th>Disponible</th>
-                  <th />
-                </tr>
-              </thead>
-
-              <tbody>
-                {products.map((p, index) => (
-                  <tr key={p.id}>
-                    <td>
-                      <div className="order-controls">
-                        <button
-                          className="order-btn"
-                          onClick={() => moveProduct(index, "up")}
-                          disabled={index === 0}
-                        >
-                          ▲
-                        </button>
-
-                        <button
-                          className="order-btn"
-                          onClick={() => moveProduct(index, "down")}
-                          disabled={index === products.length - 1}
-                        >
-                          ▼
-                        </button>
-                      </div>
-                    </td>
-
-                    <td>
-                      {p.image_url ? (
-                        <img
-                          src={p.image_url}
-                          alt={p.name}
-                          className="table-image"
-                          onError={(e) => {
-                            e.currentTarget.style.display = "none";
-                          }}
-                        />
-                      ) : (
-                        <div className="table-image table-image--placeholder">
-                          🍽
-                        </div>
-                      )}
-                    </td>
-
-                    <td>
-                      <p className="table-item-name">{p.name}</p>
-
-                      {p.badge && (
-                        <span className="table-badge">{p.badge}</span>
-                      )}
-                    </td>
-
-                    <td className="text-muted">{catLabel(p.category_id)}</td>
-
-                    <td className="text-strong">
-                      ${p.price.toLocaleString("es-AR")}
-                    </td>
-
-                    <td>
-                      <label className="toggle">
-                        <input
-                          type="checkbox"
-                          className="toggle__input"
-                          checked={p.available}
-                          onChange={() => toggleAvailable(p)}
-                        />
-
-                        <span className="toggle__slider" />
-                      </label>
-                    </td>
-
-                    <td>
-                      <div className="responsive-actions">
-                        <button
-                          className="btn btn--ghost"
-                          onClick={() => openEdit(p)}
-                        >
-                          Editar
-                        </button>
-
-                        <button
-                          className="btn btn--danger"
-                          onClick={() => setConfirmDelete(p)}
-                        >
-                          Eliminar
-                        </button>
-                      </div>
-                    </td>
+                <thead>
+                  <tr>
+                    <th>Orden</th>
+                    <th>Imagen</th>
+                    <th>Nombre</th>
+                    <th>Categoría</th>
+                    <th>Precio</th>
+                    <th>Disponible</th>
+                    <th />
                   </tr>
-                ))}
-              </tbody>
+                </thead>
+
+                <tbody>
+                  {filtered.map((p, index) => (
+                    <tr key={p.id}>
+                      <td>
+                        <div className="order-controls">
+                          <button
+                            className="order-btn"
+                            onClick={() => moveProduct(index, "up")}
+                            disabled={index === 0}
+                          >
+                            ▲
+                          </button>
+
+                          <button
+                            className="order-btn"
+                            onClick={() => moveProduct(index, "down")}
+                            disabled={index === products.length - 1}
+                          >
+                            ▼
+                          </button>
+                        </div>
+                      </td>
+
+                      <td>
+                        {p.image_url ? (
+                          <img
+                            src={p.image_url}
+                            alt={p.name}
+                            className="table-image"
+                            onError={(e) => {
+                              e.currentTarget.style.display = "none";
+                            }}
+                          />
+                        ) : (
+                          <div className="table-image table-image--placeholder">
+                            🍽
+                          </div>
+                        )}
+                      </td>
+
+                      <td>
+                        <p className="table-item-name">{p.name}</p>
+
+                        {p.badge && (
+                          <span className="table-badge">{p.badge}</span>
+                        )}
+                      </td>
+
+                      <td className="text-muted">{catLabel(p.category_id)}</td>
+
+                      <td className="text-strong">
+                        ${p.price.toLocaleString("es-AR")}
+                      </td>
+
+                      <td>
+                        <label className="toggle">
+                          <input
+                            type="checkbox"
+                            className="toggle__input"
+                            checked={p.available}
+                            onChange={() => toggleAvailable(p)}
+                          />
+
+                          <span className="toggle__slider" />
+                        </label>
+                      </td>
+
+                      <td>
+                        <div className="responsive-actions">
+                          <button
+                            className="btn btn--ghost"
+                            onClick={() => openEdit(p)}
+                          >
+                            Editar
+                          </button>
+
+                          <button
+                            className="btn btn--danger"
+                            onClick={() => setConfirmDelete(p)}
+                          >
+                            Eliminar
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
               </table>
             </div>
           </div>
@@ -717,8 +761,8 @@ export function ProductsPage() {
 
               <p className="modal__text">
                 ¿Eliminás{" "}
-                <strong className="text-primary">{confirmDelete.name}</strong>
-                ? Esta acción no se puede deshacer y también eliminará la imagen
+                <strong className="text-primary">{confirmDelete.name}</strong>?
+                Esta acción no se puede deshacer y también eliminará la imagen
                 del producto.
               </p>
             </div>

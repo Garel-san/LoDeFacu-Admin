@@ -81,6 +81,21 @@ select {
   font-size: 14px;
 }
 
+/* ─── Filter toolbar ────────────────────────────────────────── */
+.filter-toolbar {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+
+.filter-toolbar__search {
+  width: 220px !important;
+}
+
+.filter-toolbar__select {
+  width: 200px !important;
+}
 /* ─── Layout ────────────────────────────────────────────────── */
 .admin-layout {
   display: flex;
