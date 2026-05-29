@@ -49,14 +49,7 @@ export function SettingsPage() {
   };
 
   const set = (key: keyof StoreConfig, value: unknown) => {
-    setConfig((prev) =>
-      prev
-        ? {
-            ...prev,
-            [key]: value,
-          }
-        : prev,
-    );
+    setConfig((prev) => (prev ? { ...prev, [key]: value } : prev));
   };
 
   if (loading || !config) {
@@ -71,8 +64,9 @@ export function SettingsPage() {
           <p className="page-subtitle">Datos del local y horarios</p>
         </div>
 
+        {/* Guardar — solo visible en desktop en el header */}
         <button
-          className="btn btn--primary"
+          className="btn btn--primary desktop-only"
           onClick={handleSave}
           disabled={saving}
         >
@@ -84,10 +78,7 @@ export function SettingsPage() {
         {/* Datos del local */}
         <div className="card card-stack">
           <div>
-            <h2 className="card-title">
-              Datos del local
-            </h2>
-
+            <h2 className="card-title">Datos del local</h2>
             <p className="card-subtitle">
               Información principal visible para los clientes.
             </p>
@@ -95,7 +86,6 @@ export function SettingsPage() {
 
           <div className="field">
             <label className="field__label">Nombre del local</label>
-
             <input
               className="field__input"
               value={config.name}
@@ -108,7 +98,6 @@ export function SettingsPage() {
             <label className="field__label">
               WhatsApp (formato: 541122334455)
             </label>
-
             <input
               className="field__input"
               value={config.whatsapp}
@@ -119,7 +108,6 @@ export function SettingsPage() {
 
           <div className="field">
             <label className="field__label">Dirección</label>
-
             <input
               className="field__input"
               value={config.address}
@@ -133,33 +121,34 @@ export function SettingsPage() {
         <div className="card card-stack">
           <div className="card-header">
             <div>
-              <h2 className="card-title">
-                Delivery
-              </h2>
-
+              <h2 className="card-title">Delivery</h2>
               <p className="card-subtitle">
                 Controlá horarios y disponibilidad.
               </p>
             </div>
 
-            <label className="toggle">
-              <input
-                type="checkbox"
-                className="toggle__input"
-                checked={config.delivery_available}
-                onChange={(e) => set("delivery_available", e.target.checked)}
-              />
-
-              <span className="toggle__slider" />
-            </label>
+            {/* Toggle con etiqueta de estado */}
+            <div className="settings-toggle-wrap">
+              <span className="settings-toggle-wrap__label">
+                {config.delivery_available ? "Activo" : "Inactivo"}
+              </span>
+              <label className="toggle">
+                <input
+                  type="checkbox"
+                  className="toggle__input"
+                  checked={config.delivery_available}
+                  onChange={(e) => set("delivery_available", e.target.checked)}
+                />
+                <span className="toggle__slider" />
+              </label>
+            </div>
           </div>
 
           <div className="responsive-grid">
             <div className="field">
               <label className="field__label">Horario de apertura</label>
-
               <input
-                className="field__input"
+                className="field__input field__input--time"
                 type="time"
                 value={config.delivery_open_time}
                 onChange={(e) => set("delivery_open_time", e.target.value)}
@@ -168,9 +157,8 @@ export function SettingsPage() {
 
             <div className="field">
               <label className="field__label">Horario de cierre</label>
-
               <input
-                className="field__input"
+                className="field__input field__input--time"
                 type="time"
                 value={config.delivery_close_time}
                 onChange={(e) => set("delivery_close_time", e.target.value)}
@@ -183,30 +171,31 @@ export function SettingsPage() {
         <div className="card card-stack">
           <div className="card-header">
             <div>
-              <h2 className="card-title">
-                Promo del día
-              </h2>
-
+              <h2 className="card-title">Promo del día</h2>
               <p className="card-subtitle">
                 Configuración destacada para el catálogo.
               </p>
             </div>
 
-            <label className="toggle">
-              <input
-                type="checkbox"
-                className="toggle__input"
-                checked={config.promo_active}
-                onChange={(e) => set("promo_active", e.target.checked)}
-              />
-
-              <span className="toggle__slider" />
-            </label>
+            {/* Toggle con etiqueta de estado */}
+            <div className="settings-toggle-wrap">
+              <span className="settings-toggle-wrap__label">
+                {config.promo_active ? "Activa" : "Inactiva"}
+              </span>
+              <label className="toggle">
+                <input
+                  type="checkbox"
+                  className="toggle__input"
+                  checked={config.promo_active}
+                  onChange={(e) => set("promo_active", e.target.checked)}
+                />
+                <span className="toggle__slider" />
+              </label>
+            </div>
           </div>
 
           <div className="field">
             <label className="field__label">Título de la promo</label>
-
             <input
               className="field__input"
               value={config.promo_title}
@@ -218,7 +207,6 @@ export function SettingsPage() {
           <div className="responsive-grid">
             <div className="field">
               <label className="field__label">Precio promocional</label>
-
               <input
                 className="field__input"
                 type="number"
@@ -230,7 +218,6 @@ export function SettingsPage() {
 
             <div className="field">
               <label className="field__label">Precio original</label>
-
               <input
                 className="field__input"
                 type="number"
@@ -243,6 +230,16 @@ export function SettingsPage() {
             </div>
           </div>
         </div>
+
+        {/* Guardar — al final, solo visible en mobile */}
+        <button
+          className="btn btn--primary mobile-only"
+          onClick={handleSave}
+          disabled={saving}
+          style={{ width: "100%" }}
+        >
+          {saved ? "✓ Guardado" : saving ? "Guardando..." : "Guardar cambios"}
+        </button>
       </div>
     </div>
   );

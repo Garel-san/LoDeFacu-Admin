@@ -466,7 +466,7 @@ export function ProductsPage() {
 
           {/* Mobile */}
           <div className="mobile-only item-list">
-            {products.map((p, index) => (
+            {filtered.map((p, index) => (
               <div className="item-card" key={p.id}>
                 <div className="item-card__header">
                   {p.image_url ? (
@@ -476,12 +476,14 @@ export function ProductsPage() {
                       className="item-card__image"
                     />
                   ) : (
-                    <div className="item-card__image">🍽</div>
+                    <div className="item-card__image item-card__image--placeholder">
+                      🍽
+                    </div>
                   )}
 
                   <div className="item-card__content">
                     <div className="item-card__topline">
-                      <div>
+                      <div style={{ flex: 1, minWidth: 0 }}>
                         <p className="item-card__title">{p.name}</p>
 
                         <p className="item-card__subtitle">
@@ -489,16 +491,20 @@ export function ProductsPage() {
                         </p>
                       </div>
 
-                      <label className="toggle">
-                        <input
-                          type="checkbox"
-                          className="toggle__input"
-                          checked={p.available}
-                          onChange={() => toggleAvailable(p)}
-                        />
-
-                        <span className="toggle__slider" />
-                      </label>
+                      <div className="item-card__toggle-wrap">
+                        <label className="toggle">
+                          <input
+                            type="checkbox"
+                            className="toggle__input"
+                            checked={p.available}
+                            onChange={() => toggleAvailable(p)}
+                          />
+                          <span className="toggle__slider" />
+                        </label>
+                        <span className="item-card__toggle-label">
+                          {p.available ? "Activo" : "Oculto"}
+                        </span>
+                      </div>
                     </div>
 
                     <div className="item-card__meta">
@@ -515,38 +521,44 @@ export function ProductsPage() {
                   </div>
                 </div>
 
-                <div className="item-card__order">
-                  <button
-                    className="order-btn"
-                    onClick={() => moveProduct(index, "up")}
-                    disabled={index === 0}
-                  >
-                    ▲
-                  </button>
+                <div className="item-card__divider" />
 
-                  <button
-                    className="order-btn"
-                    onClick={() => moveProduct(index, "down")}
-                    disabled={index === products.length - 1}
-                  >
-                    ▼
-                  </button>
-                </div>
+                <div className="item-card__footer">
+                  <div className="item-card__order">
+                    <button
+                      className="order-btn"
+                      onClick={() => moveProduct(index, "up")}
+                      disabled={index === 0}
+                      title="Subir"
+                    >
+                      ▲
+                    </button>
 
-                <div className="item-card__actions">
-                  <button
-                    className="btn btn--ghost"
-                    onClick={() => openEdit(p)}
-                  >
-                    Editar
-                  </button>
+                    <button
+                      className="order-btn"
+                      onClick={() => moveProduct(index, "down")}
+                      disabled={index === products.length - 1}
+                      title="Bajar"
+                    >
+                      ▼
+                    </button>
+                  </div>
 
-                  <button
-                    className="btn btn--danger"
-                    onClick={() => setConfirmDelete(p)}
-                  >
-                    Eliminar
-                  </button>
+                  <div className="item-card__actions">
+                    <button
+                      className="btn btn--ghost item-card__btn-edit"
+                      onClick={() => openEdit(p)}
+                    >
+                      ✏️ Editar
+                    </button>
+
+                    <button
+                      className="btn item-card__btn-delete"
+                      onClick={() => setConfirmDelete(p)}
+                    >
+                      🗑️ Eliminar
+                    </button>
+                  </div>
                 </div>
               </div>
             ))}
@@ -557,37 +569,31 @@ export function ProductsPage() {
       {showModal && (
         <div className="modal-overlay" onClick={() => setShowModal(false)}>
           <div className="modal" onClick={(e) => e.stopPropagation()}>
-            <h2 className="modal__title">
-              {editing ? "Editar producto" : "Nuevo producto"}
-            </h2>
+            {/* Título + subtítulo con nombre del producto */}
+            <div>
+              <h2 className="modal__title">
+                {editing ? "Editar producto" : "Nuevo producto"}
+              </h2>
+              {editing && <p className="modal__subtitle">{editing.name}</p>}
+            </div>
 
             <div className="field">
               <label className="field__label">Nombre</label>
-
               <input
                 className="field__input"
                 value={form.name}
-                onChange={(e) =>
-                  setForm({
-                    ...form,
-                    name: e.target.value,
-                  })
-                }
+                onChange={(e) => setForm({ ...form, name: e.target.value })}
                 placeholder="Hamburguesa Completa"
               />
             </div>
 
             <div className="field">
               <label className="field__label">Descripción</label>
-
               <textarea
                 className="field__textarea"
                 value={form.description}
                 onChange={(e) =>
-                  setForm({
-                    ...form,
-                    description: e.target.value,
-                  })
+                  setForm({ ...form, description: e.target.value })
                 }
                 placeholder="Carne, lechuga, tomate..."
               />
@@ -595,36 +601,25 @@ export function ProductsPage() {
 
             <div className="field">
               <label className="field__label">Precio</label>
-
               <input
                 className="field__input"
                 type="number"
                 value={form.price}
-                onChange={(e) =>
-                  setForm({
-                    ...form,
-                    price: e.target.value,
-                  })
-                }
+                onChange={(e) => setForm({ ...form, price: e.target.value })}
                 placeholder="6500"
               />
             </div>
 
             <div className="field">
               <label className="field__label">Categoría</label>
-
               <select
                 className="field__select"
                 value={form.category_id}
                 onChange={(e) =>
-                  setForm({
-                    ...form,
-                    category_id: e.target.value,
-                  })
+                  setForm({ ...form, category_id: e.target.value })
                 }
               >
                 <option value="">Seleccioná una categoría</option>
-
                 {categories.map((c) => (
                   <option key={c.id} value={c.id}>
                     {c.label}
@@ -635,53 +630,49 @@ export function ProductsPage() {
 
             <div className="field">
               <label className="field__label">Badge (opcional)</label>
-
               <select
                 className="field__select"
                 value={form.badge}
-                onChange={(e) =>
-                  setForm({
-                    ...form,
-                    badge: e.target.value,
-                  })
-                }
+                onChange={(e) => setForm({ ...form, badge: e.target.value })}
               >
                 <option value="">Sin badge</option>
-
                 <option value="popular">Popular</option>
-
                 <option value="nuevo">Nuevo</option>
               </select>
             </div>
 
+            {/* Campo imagen estilizado */}
             <div className="field">
               <label className="field__label">Imagen</label>
-
-              <input
-                type="file"
-                accept="image/*"
-                onChange={(e) => {
-                  const file = e.target.files?.[0] ?? null;
-
-                  setImageFile(file);
-
-                  if (file) {
-                    const url = URL.createObjectURL(file);
-
-                    setPreviewUrl(url);
-                  } else {
-                    setPreviewUrl(null);
-                  }
-                }}
-                className="file-input"
-              />
+              <label className="file-upload-area">
+                <input
+                  type="file"
+                  accept="image/*"
+                  className="file-upload-area__input"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0] ?? null;
+                    setImageFile(file);
+                    if (file) {
+                      const url = URL.createObjectURL(file);
+                      setPreviewUrl(url);
+                    } else {
+                      setPreviewUrl(null);
+                    }
+                  }}
+                />
+                <span className="file-upload-area__icon">📎</span>
+                <span className="file-upload-area__text">
+                  {imageFile
+                    ? imageFile.name
+                    : "Tocá para seleccionar una imagen"}
+                </span>
+              </label>
 
               {previewUrl && (
                 <div className="image-preview">
                   <p className="image-preview__label image-preview__label--accent">
                     Preview — así se va a ver
                   </p>
-
                   <img
                     src={previewUrl}
                     alt="preview"
@@ -693,7 +684,6 @@ export function ProductsPage() {
               {form.image_url && !previewUrl && (
                 <div className="image-preview">
                   <p className="image-preview__label">Imagen actual</p>
-
                   <img
                     src={form.image_url}
                     alt="actual"
@@ -703,28 +693,25 @@ export function ProductsPage() {
               )}
             </div>
 
+            {/* Disponible con toggle consistente */}
             <div className="field field--inline">
               <label className="field__label">Disponible</label>
-
               <label className="toggle">
                 <input
                   type="checkbox"
                   className="toggle__input"
                   checked={form.available}
                   onChange={(e) =>
-                    setForm({
-                      ...form,
-                      available: e.target.checked,
-                    })
+                    setForm({ ...form, available: e.target.checked })
                   }
                 />
-
                 <span className="toggle__slider" />
               </label>
             </div>
 
             {error && <p className="form-error">{error}</p>}
 
+            {/* Botones en fila: Cancelar ghost izq, Guardar primary der */}
             <div className="modal__actions">
               <button
                 className="btn btn--ghost"
@@ -732,7 +719,6 @@ export function ProductsPage() {
               >
                 Cancelar
               </button>
-
               <button
                 className="btn btn--primary"
                 onClick={handleSave}

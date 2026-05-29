@@ -195,13 +195,9 @@ export function CategoriesPage() {
                         </div>
                       </td>
 
-                      <td className="text-hint mono">
-                        {category.id}
-                      </td>
+                      <td className="text-hint mono">{category.id}</td>
 
-                      <td className="text-strong">
-                        {category.label}
-                      </td>
+                      <td className="text-strong">{category.label}</td>
 
                       <td>
                         <div className="responsive-actions">
@@ -231,46 +227,51 @@ export function CategoriesPage() {
           <div className="mobile-only item-list">
             {categories.map((category, index) => (
               <div key={category.id} className="item-card">
+                {/* Info */}
                 <div className="item-card__header">
                   <div className="item-card__content">
                     <p className="item-card__title">{category.label}</p>
-
-                    <p className="item-card__subtitle">{category.id}</p>
+                    <span className="item-card__id-badge">{category.id}</span>
                   </div>
                 </div>
 
-                <div className="item-card__order">
-                  <button
-                    className="order-btn"
-                    onClick={() => moveCategory(index, "up")}
-                    disabled={index === 0}
-                  >
-                    ▲
-                  </button>
+                <div className="item-card__divider" />
 
-                  <button
-                    className="order-btn"
-                    onClick={() => moveCategory(index, "down")}
-                    disabled={index === categories.length - 1}
-                  >
-                    ▼
-                  </button>
-                </div>
+                {/* Footer: orden + acciones */}
+                <div className="item-card__footer">
+                  <div className="item-card__order">
+                    <button
+                      className="order-btn"
+                      onClick={() => moveCategory(index, "up")}
+                      disabled={index === 0}
+                      title="Subir"
+                    >
+                      ▲
+                    </button>
+                    <button
+                      className="order-btn"
+                      onClick={() => moveCategory(index, "down")}
+                      disabled={index === categories.length - 1}
+                      title="Bajar"
+                    >
+                      ▼
+                    </button>
+                  </div>
 
-                <div className="item-card__actions">
-                  <button
-                    className="btn btn--ghost"
-                    onClick={() => openEdit(category)}
-                  >
-                    Editar
-                  </button>
-
-                  <button
-                    className="btn btn--danger"
-                    onClick={() => setConfirmDelete(category)}
-                  >
-                    Eliminar
-                  </button>
+                  <div className="item-card__actions">
+                    <button
+                      className="btn btn--ghost item-card__btn-edit"
+                      onClick={() => openEdit(category)}
+                    >
+                      ✏️ Editar
+                    </button>
+                    <button
+                      className="btn item-card__btn-delete"
+                      onClick={() => setConfirmDelete(category)}
+                    >
+                      🗑️ Eliminar
+                    </button>
+                  </div>
                 </div>
               </div>
             ))}
@@ -350,8 +351,8 @@ export function CategoriesPage() {
 
             <p className="modal__text">
               ¿Eliminás la categoría{" "}
-              <strong className="text-primary">{confirmDelete.label}</strong>
-              ? Los productos de esta categoría quedarán sin categoría asignada.
+              <strong className="text-primary">{confirmDelete.label}</strong>?
+              Los productos de esta categoría quedarán sin categoría asignada.
             </p>
 
             <div className="modal__actions">

@@ -185,9 +185,7 @@ export function DeliveryZonesPage() {
                         </div>
                       </td>
 
-                      <td className="text-strong">
-                        {zone.label}
-                      </td>
+                      <td className="text-strong">{zone.label}</td>
 
                       <td className="text-strong text-accent">
                         ${zone.price.toLocaleString("es-AR")}
@@ -221,50 +219,60 @@ export function DeliveryZonesPage() {
           <div className="mobile-only item-list">
             {zones.map((zone, index) => (
               <div key={zone.id} className="item-card">
+                {/* Info */}
                 <div className="item-card__header">
                   <div className="item-card__content">
                     <p className="item-card__title">{zone.label}</p>
-
                     <div className="item-card__meta">
-                      <span className="item-card__price">
-                        ${zone.price.toLocaleString("es-AR")}
-                      </span>
+                      <div className="item-card__zone-price">
+                        <span className="item-card__zone-price__label">
+                          Costo de envío
+                        </span>
+                        <span className="item-card__price">
+                          ${zone.price.toLocaleString("es-AR")}
+                        </span>
+                      </div>
                     </div>
                   </div>
                 </div>
 
-                <div className="item-card__order">
-                  <button
-                    className="order-btn"
-                    onClick={() => moveZone(index, "up")}
-                    disabled={index === 0}
-                  >
-                    ▲
-                  </button>
+                <div className="item-card__divider" />
 
-                  <button
-                    className="order-btn"
-                    onClick={() => moveZone(index, "down")}
-                    disabled={index === zones.length - 1}
-                  >
-                    ▼
-                  </button>
-                </div>
+                {/* Footer: orden + acciones */}
+                <div className="item-card__footer">
+                  <div className="item-card__order">
+                    <button
+                      className="order-btn"
+                      onClick={() => moveZone(index, "up")}
+                      disabled={index === 0}
+                      title="Subir"
+                    >
+                      ▲
+                    </button>
+                    <button
+                      className="order-btn"
+                      onClick={() => moveZone(index, "down")}
+                      disabled={index === zones.length - 1}
+                      title="Bajar"
+                    >
+                      ▼
+                    </button>
+                  </div>
 
-                <div className="item-card__actions">
-                  <button
-                    className="btn btn--ghost"
-                    onClick={() => openEdit(zone)}
-                  >
-                    Editar
-                  </button>
-
-                  <button
-                    className="btn btn--danger"
-                    onClick={() => setConfirmDelete(zone)}
-                  >
-                    Eliminar
-                  </button>
+                  <div className="item-card__actions">
+                    <button
+                      className="btn btn--ghost item-card__btn-edit"
+                      onClick={() => openEdit(zone)}
+                    >
+                      ✏️ Editar
+                    </button>
+                    <button
+                      className="btn item-card__btn-delete"
+                      onClick={() => setConfirmDelete(zone)}
+                    >
+                      🗑️ Eliminar
+                    </button>
+                  </div>
                 </div>
               </div>
             ))}
@@ -343,8 +351,7 @@ export function DeliveryZonesPage() {
 
             <p className="modal__text">
               ¿Eliminás la zona{" "}
-              <strong className="text-primary">{confirmDelete.label}</strong>
-              ?
+              <strong className="text-primary">{confirmDelete.label}</strong>?
             </p>
 
             <div className="modal__actions">
